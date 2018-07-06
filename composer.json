@@ -14,7 +14,7 @@
     },
     "autoload": {
 	    "psr-4": {
-	        "bonza\\redis\\": "src/"
+	        "bonza\\": "src/"
 	    }
 	},
     "license": "MIT",
