@@ -5,12 +5,12 @@
  * @Last Modified by:   ysg
  * @Last Modified time: 2016-07-20 16:00:10
  */
-namespace bonza;
+namespace bonza\redis;
 
 class Redis
 {
-    private static $_instance = NULL;
-    private $redis = NULL;
+    private static $_instance = null;
+    private $redis = null;
 
     /**
      * @param string $host
@@ -27,17 +27,17 @@ class Redis
             $this->redis = new \Redis();
             $this->redis->connect($host, $port);
         } catch (\Exception $e) {
-            exception('Redis connect error:'.$e->getMessage());
+            throw new Exception('Redis connect error:'.$e->getMessage());
         }
     }
 
-    static public function getInstance()
+    static public function getInstance():object
     {
         if (!(self::$_instance instanceof self)) {
             try {
                 self::$_instance = new self;
             } catch (\Exception $e) {
-                exception($e->getMessage());
+                throw new Exception($e->getMessage());
             }
         }
         return self::$_instance;
@@ -287,7 +287,7 @@ class Redis
 
     /**
      * 返回redis对象
-     * redis有非常多的操作方法，我们只封装了一部分
+     * redis有非常多的操作方法，这里只封装了一部分
      * 拿着这个对象就可以直接调用redis自身方法
      * eg:$redis->redisOtherMethods()->keys('*a*')   keys方法没封
      */

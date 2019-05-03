@@ -1,6 +1,8 @@
 {
     "name": "bonza/redis",
     "description": "redis操作类库",
+    "type": "library",
+    "license": "MIT",
 	"homepage": "https://github.com/bonzaphp/redis.git",
 	"authors": [
 	    {
@@ -8,7 +10,6 @@
 	        "email": "y.shi.guo@gmail.com"
 	    }
 	],
-    "type": "library",
     "require": {
         "php": ">=5.4.0"
     },
@@ -17,6 +18,5 @@
 	        "bonza\\": "src/"
 	    }
 	},
-    "license": "MIT",
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }
