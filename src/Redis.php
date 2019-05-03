@@ -5,8 +5,8 @@
  * @Last Modified by:   ysg
  * @Last Modified time: 2016-07-20 16:00:10
  */
-namespace bonza\redis;
 
+namespace bonza\redis;
 class Redis
 {
     private static $_instance = null;
@@ -21,23 +21,27 @@ class Redis
     {
         // 检测php环境
         if (!extension_loaded('redis')) {
-            throw new Exception('not support:redis');
+            throw new \Exception('not support:redis');
         }
         try {
             $this->redis = new \Redis();
             $this->redis->connect($host, $port);
         } catch (\Exception $e) {
-            throw new Exception('Redis connect error:'.$e->getMessage());
+            throw new \Exception('Redis connect error:' . $e->getMessage());
         }
     }
 
-    static public function getInstance():object
+    /**
+     * @return Redis|null
+     * @throws \Exception
+     */
+    static public function getInstance()
     {
         if (!(self::$_instance instanceof self)) {
             try {
                 self::$_instance = new self;
             } catch (\Exception $e) {
-                throw new Exception($e->getMessage());
+                throw new \Exception($e->getMessage());
             }
         }
         return self::$_instance;
@@ -52,7 +56,7 @@ class Redis
      */
     public function set($key, $value, $timeOut = 600)
     {
-        $retRes = $this->redis->setex($key,$timeOut, $value);
+        $retRes = $this->redis->setex($key, $timeOut, $value);
         return $retRes;
     }
 
@@ -72,9 +76,9 @@ class Redis
      * @param string|array $value  值
      * @return mixed
      */
-    public function zadd($key, $value)
+    public function zadd($key, $score, $value)
     {
-        return $this->redis->zadd($key, $value);
+        return $this->redis->zadd($key, $score, $value);
     }
 
     /**
@@ -89,7 +93,7 @@ class Redis
 
     /**
      * 构建一个列表(先进后去，类似栈)
-     * @param sting $key KEY名称
+     * @param string $key KEY名称
      * @param string $value 值
      * @return mixed
      */
@@ -101,8 +105,9 @@ class Redis
 
     /**
      * 构建一个列表(先进先去，类似队列)
-     * @param sting $key KEY名称
+     * @param string $key KEY名称
      * @param string $value 值
+     * @return bool|int
      */
     public function rpush($key, $value)
     {
@@ -112,9 +117,10 @@ class Redis
 
     /**
      * 获取所有列表数据（从头到尾取）
-     * @param sting $key KEY名称
+     * @param string $key KEY名称
      * @param int $head 开始
      * @param int $tail 结束
+     * @return array
      */
     public function lranges($key, $head, $tail)
     {
@@ -124,8 +130,9 @@ class Redis
     /**
      * HASH类型
      * @param string $tableName 表名字key
-     * @param string $key 字段名字
-     * @param sting $value 值
+     * @param $field
+     * @param string $value 值
+     * @return bool|int
      */
     public function hset($tableName, $field, $value)
     {
@@ -141,8 +148,8 @@ class Redis
     /**
      * 设置多个值
      * @param array $keyArray KEY名称
-     * @param string|array $value 获取得到的数据
-     * @param int $timeOut 时间
+     * @param $timeout
+     * @return bool|string
      */
     public function sets($keyArray, $timeout)
     {
@@ -172,7 +179,7 @@ class Redis
 
     /**
      * 同时获取多个值
-     * @param ayyay $keyArray 获key数值
+     * @param array $keyArray 获key数值
      * @return mixed
      */
     public function gets($keyArray)
@@ -251,7 +258,7 @@ class Redis
     /**
      * 重命名- 当且仅当newkey不存在时，将key改为newkey ，当newkey存在时候会报错哦RENAME
      *  和 rename不一样，它是直接更新（存在的值也会直接更新）
-     * @param string $Key KEY名称
+     * @param $key
      * @param string $newKey 新key名称
      * @return mixed
      */

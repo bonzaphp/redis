@@ -15,7 +15,7 @@
     },
     "autoload": {
 	    "psr-4": {
-	        "bonza\\": "src/"
+	        "bonza\\redis\\": "src/"
 	    }
 	},
     "minimum-stability": "stable"
