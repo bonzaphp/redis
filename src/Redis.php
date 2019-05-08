@@ -11,13 +11,13 @@ class Redis
 {
     private static $_instance = null;
     private $redis = null;
+    static private $host = '127.0.0.1';
+    static private $port = 6379;
 
     /**
-     * @param string $host
-     * @param int $port
      * @throws \Exception
      */
-    private function __construct($host = '127.0.0.1', $port = 6379)
+    private function __construct()
     {
         // 检测php环境
         if (!extension_loaded('redis')) {
@@ -25,10 +25,20 @@ class Redis
         }
         try {
             $this->redis = new \Redis();
-            $this->redis->connect($host, $port);
+            $this->redis->connect(self::$host, self::$port);
         } catch (\Exception $e) {
             throw new \Exception('Redis connect error:' . $e->getMessage());
         }
+    }
+
+    /**
+     * @author bonzaphp@gmail.com
+     * @param array $config
+     */
+    static public function setConfig(array $config)
+    {
+        self::$host = $config['host']??self::$host;
+        self::$port = $config['port']??self::$port;
     }
 
     /**
@@ -39,7 +49,7 @@ class Redis
     {
         if (!(self::$_instance instanceof self)) {
             try {
-                self::$_instance = new self;
+                self::$_instance = new self();
             } catch (\Exception $e) {
                 throw new \Exception($e->getMessage());
             }
