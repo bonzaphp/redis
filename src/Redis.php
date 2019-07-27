@@ -7,41 +7,47 @@
  */
 
 namespace bonza\redis;
+use Exception;
+
 class Redis
 {
     private static $_instance = null;
+    /**
+     * @var \Redis
+     */
     private $redis = null;
 
     /**
      * @param string $host
      * @param int $port
-     * @throws \Exception
+     * @throws Exception
      */
     private function __construct($host = '127.0.0.1', $port = 6379)
     {
         // 检测php环境
         if (!extension_loaded('redis')) {
-            throw new \Exception('not support:redis');
+            throw new \RuntimeException('not support:redis');
         }
         try {
             $this->redis = new \Redis();
             $this->redis->connect($host, $port);
-        } catch (\Exception $e) {
-            throw new \Exception('Redis connect error:' . $e->getMessage());
+        } catch (Exception $e) {
+            throw new \RuntimeException('Redis connect error:' . $e->getMessage());
         }
     }
 
     /**
-     * @return Redis|null
-     * @throws \Exception
+     * redis 实例生成
+     * @return Redis
+     * @throws Exception
      */
-    static public function getInstance()
+    public static function getInstance()
     {
         if (!(self::$_instance instanceof self)) {
             try {
                 self::$_instance = new self;
-            } catch (\Exception $e) {
-                throw new \Exception($e->getMessage());
+            } catch (Exception $e) {
+                throw new \RuntimeException($e->getMessage());
             }
         }
         return self::$_instance;
@@ -56,8 +62,7 @@ class Redis
      */
     public function set($key, $value, $timeOut = 600)
     {
-        $retRes = $this->redis->setex($key, $timeOut, $value);
-        return $retRes;
+        return $this->redis->setex($key, $timeOut, $value);
     }
 
     /*
@@ -111,7 +116,6 @@ class Redis
      */
     public function rpush($key, $value)
     {
-        echo "$key - $value \n";
         return $this->redis->rpush($key, $value);
     }
 
@@ -161,9 +165,8 @@ class Redis
                 }
             }
             return $retRes;
-        } else {
-            return "Call  " . __FUNCTION__ . " method  parameter  Error !";
         }
+        return 'Call  ' . __FUNCTION__ . ' method  parameter  Error !';
     }
 
     /**
@@ -173,8 +176,7 @@ class Redis
      */
     public function get($key)
     {
-        $result = $this->redis->get($key);
-        return $result;
+        return $this->redis->get($key);
     }
 
     /**
@@ -186,9 +188,8 @@ class Redis
     {
         if (is_array($keyArray)) {
             return $this->redis->mget($keyArray);
-        } else {
-            return "Call  " . __FUNCTION__ . " method  parameter  Error !";
         }
+        return 'Call  ' . __FUNCTION__ . ' method  parameter  Error !';
     }
 
     /**
@@ -219,9 +220,8 @@ class Redis
     {
         if (is_array($keyArray)) {
             return $this->redis->del($keyArray);
-        } else {
-            return "Call  " . __FUNCTION__ . " method  parameter  Error !";
         }
+        return 'Call  ' . __FUNCTION__ . ' method  parameter  Error !';
     }
 
     /**
@@ -289,7 +289,7 @@ class Redis
 
     public function __clone()
     {
-        trigger_error("Clone is not allow!", E_USER_ERROR);
+        trigger_error('Clone is not allow!', E_USER_ERROR);
     }
 
     /**
