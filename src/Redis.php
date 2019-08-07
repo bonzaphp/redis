@@ -8,46 +8,54 @@
 
 namespace bonza\redis;
 use Exception;
+use RuntimeException;
 
 class Redis
 {
-    private static $_instance = null;
+    /**
+     * @var self
+     */
+    private static $_instance;
     /**
      * @var \Redis
      */
-    private $redis = null;
+    private $redis;
 
     /**
      * @param string $host
      * @param int $port
-     * @throws Exception
+     * @param string $password 密码
      */
-    private function __construct($host = '127.0.0.1', $port = 6379)
+    private function __construct($host = '127.0.0.1', $port = 6379,string $password = '')
     {
         // 检测php环境
         if (!extension_loaded('redis')) {
-            throw new \RuntimeException('not support:redis');
+            throw new RuntimeException('not support:redis');
         }
         try {
             $this->redis = new \Redis();
             $this->redis->connect($host, $port);
+            $this->redis->auth($password);
         } catch (Exception $e) {
-            throw new \RuntimeException('Redis connect error:' . $e->getMessage());
+            throw new RuntimeException('Redis connect error:' . $e->getMessage());
         }
     }
 
     /**
      * redis 实例生成
+     * @param array $config
      * @return Redis
-     * @throws Exception
      */
-    public static function getInstance()
+    public static function getInstance(array $config = []): Redis
     {
+        $host = $config['host']??'127.0.0.1';
+        $port = $config['port']??6379;
+        $password = $config['password']??'';
         if (!(self::$_instance instanceof self)) {
             try {
-                self::$_instance = new self;
+                self::$_instance = new self($host,$port,$password);
             } catch (Exception $e) {
-                throw new \RuntimeException($e->getMessage());
+                throw new RuntimeException($e->getMessage());
             }
         }
         return self::$_instance;
@@ -81,9 +89,9 @@ class Redis
      * @param string|array $value  值
      * @return mixed
      */
-    public function zadd($key, $score, $value)
+    public function zadd($key, $score, $value,$value1)
     {
-        return $this->redis->zadd($key, $score, $value);
+        return $this->redis->zadd($key, $score, $value,$value1);
     }
 
     /**
