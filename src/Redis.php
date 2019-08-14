@@ -216,7 +216,7 @@ class Redis
      */
     public function del($key)
     {
-        return $this->redis->delete($key);
+        return $this->redis->del($key);
     }
 
     /**
