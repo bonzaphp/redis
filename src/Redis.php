@@ -41,7 +41,7 @@ class Redis
     {
         $host = isset($config['host']) ? $config['host'] : '127.0.0.1';
         $port = isset($config['port']) ? $config['port'] : 6379;
-        $password = isset($config['password']) ?: '';
+        $password = isset($config['password']) ?$config['password']: '';
         if (!(self::$_instance instanceof self)) {
             try {
                 self::$_instance = new self($host, $port, $password);
