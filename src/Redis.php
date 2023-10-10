@@ -39,8 +39,8 @@ class Redis
      */
     public static function getInstance(array $config = [])
     {
-        $host = isset($config['host']) ?: '127.0.0.1';
-        $port = isset($config['port']) ?: 6379;
+        $host = isset($config['host']) ? $config['host'] : '127.0.0.1';
+        $port = isset($config['port']) ? $config['port'] : 6379;
         $password = isset($config['password']) ?: '';
         if (!(self::$_instance instanceof self)) {
             try {
