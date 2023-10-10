@@ -10,38 +10,43 @@ namespace bonza\redis;
 class Redis
 {
     private static $_instance = null;
-    private $redis = null;
+    private        $redis     = null;
 
     /**
      * @param string $host
      * @param int $port
-     * @throws \Exception
+     * @param string $password 密码
      */
-    private function __construct($host = '127.0.0.1', $port = 6379)
+    private function __construct($host = '127.0.0.1', $port = 6379, $password = '')
     {
         // 检测php环境
         if (!extension_loaded('redis')) {
-            throw new \Exception('not support:redis');
+            throw new \RuntimeException('not support:redis');
         }
         try {
             $this->redis = new \Redis();
             $this->redis->connect($host, $port);
+            $this->redis->auth($password);
         } catch (\Exception $e) {
-            throw new \Exception('Redis connect error:' . $e->getMessage());
+            throw new \RuntimeException('Redis connect error:' . $e->getMessage());
         }
     }
 
     /**
-     * @return Redis|null
-     * @throws \Exception
+     * redis 实例生成
+     * @param array $config
+     * @return Redis
      */
-    static public function getInstance()
+    public static function getInstance(array $config = [])
     {
+        $host = isset($config['host']) ?: '127.0.0.1';
+        $port = isset($config['port']) ?: 6379;
+        $password = isset($config['password']) ?: '';
         if (!(self::$_instance instanceof self)) {
             try {
-                self::$_instance = new self;
+                self::$_instance = new self($host, $port, $password);
             } catch (\Exception $e) {
-                throw new \Exception($e->getMessage());
+                throw new \RuntimeException($e->getMessage());
             }
         }
         return self::$_instance;
